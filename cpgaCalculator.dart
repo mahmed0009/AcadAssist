@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors, library_private_types_in_public_api, file_names, prefer_const_literals_to_create_immutables, unrelated_type_equality_checks, curly_braces_in_flow_control_structures, non_constant_identifier_names, prefer_interpolation_to_compose_strings
 
 import 'package:flutter/material.dart';
+import 'package:project/otherCalculations.dart';
 import 'package:project/scientificCalculator.dart';
 import 'package:project/simpleCalculator.dart';
 
@@ -101,6 +102,25 @@ class _CgpaCalculatorState extends State<CgpaCalculator> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => ScientificCalculator(),
+                  ),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.calculate,
+                  color: Color(0xFFFF9500), size: 30),
+              title: Text(
+                'Other Calculators',
+                style: TextStyle(
+                  color: isDarkMode ? Colors.white : const Color(0xFF2A2A2A),
+                  fontSize: 20,
+                ),
+              ),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => OtherCalculators(),
                   ),
                 );
               },
