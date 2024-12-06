@@ -1,8 +1,10 @@
-// ignore_for_file: library_private_types_in_public_api, non_constant_identifier_names, prefer_const_constructors, avoid_unnecessary_containers, file_names, prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_constructors, non_constant_identifier_names, library_private_types_in_public_api
 
-import 'package:accadassist/cpgaCalculator.dart';
-import 'package:accadassist/scientificCalculator.dart';
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:project/scientificCalculator.dart';
+import 'cgpaCalculator.dart';
 
 class SimpleCalculator extends StatefulWidget {
   const SimpleCalculator({super.key});
@@ -16,60 +18,54 @@ class SimpleCalculator extends StatefulWidget {
 class _SimpleCalculatorState extends State<SimpleCalculator> {
   String TextToDisplay = '';
   String Ans = '0';
-  // I have used this variable to control the drak and light theme of code;
   bool isDarkMode = false;
 
-  //I have created this funtion to update the diplay, So the user can see which key has he pressed.
+  // Function to update the display
   void updateDisplay(String buttonValue) {
     setState(() {
       TextToDisplay += buttonValue;
     });
   }
 
-// Function to calculate the Answer of the data stored in the TextToDisplay variable.
-  void calculateAnswer() {
+  // Function to calculate the answer using the new API
+  Future<void> calculateAnswer() async {
     try {
-      // Replace 'x' with '*' for multiplication
-      String expression = TextToDisplay.replaceAll('x', '*');
+      // API URL
+      const String API_URL = 'https://api.mathjs.org/v4/';
 
-      // Break the expression into parts (numbers and operators)
-      List<String> parts = expression.split(RegExp(r'(?<=[-+*/])|(?=[-+*/])'));
+      // Create the request body
+      final Map<String, dynamic> requestBody = {"expr": TextToDisplay};
 
-      // Start evaluating from left to right
-      double result = double.parse(parts[0]); // First number
+      // Send the request
+      final response = await http.post(
+        Uri.parse(API_URL),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode(requestBody),
+      );
 
-      for (int i = 1; i < parts.length; i += 2) {
-        String operator = parts[i]; // Get the operator
-        double nextNumber = double.parse(parts[i + 1]); // Get the next number
+      // Check the response status
+      if (response.statusCode == 200) {
+        final result = jsonDecode(response.body);
 
-        // Perform operation based on the operator
-        if (operator == '+') {
-          result += nextNumber;
-        } else if (operator == '-') {
-          result -= nextNumber;
-        } else if (operator == '*') {
-          result *= nextNumber;
-        } else if (operator == '/') {
-          result /= nextNumber;
-        }
+        // Update the result in the UI
+        setState(() {
+          Ans = result.toString();
+        });
+      } else {
+        setState(() {
+          Ans = 'Error: ${response.statusCode}';
+        });
       }
-
-      // Update the result in the UI
-      setState(() {
-        Ans = result.toString();
-      });
     } catch (e) {
-      // Show "Error" if the calculation fails
       setState(() {
-        Ans = "Error";
+        Ans = 'Error: $e';
       });
     }
   }
 
   String _getTruncatedText(String text, int maxLength) {
     if (text.length > maxLength) {
-      return text.substring(
-          text.length - maxLength); // Keep the last `maxLength` characters
+      return text.substring(text.length - maxLength);
     }
     return text;
   }
@@ -78,22 +74,16 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xFF2A2A2A),
-        title: Text(
+        backgroundColor: const Color(0xFF2A2A2A),
+        title: const Text(
           'Simple Calculator',
-          style: TextStyle(
-            color: Colors.white,
-          ),
+          style: TextStyle(color: Colors.white),
         ),
-        iconTheme: IconThemeData(
-          color: Colors.white,
-        ),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
-      // This line of code will the the theme from light to dark
-      backgroundColor: isDarkMode ? Color(0xFF514D4D) : Colors.white,
-
+      backgroundColor: isDarkMode ? const Color(0xFF514D4D) : Colors.white,
       drawer: Drawer(
-        backgroundColor: isDarkMode ? Color(0xFF2A2A2A) : Colors.white,
+        backgroundColor: isDarkMode ? const Color(0xFF2A2A2A) : Colors.white,
         child: ListView(
           children: [
             DrawerHeader(
@@ -101,7 +91,7 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
                 child: Text(
                   'AccadAssist',
                   style: TextStyle(
-                    color: isDarkMode ? Colors.white : Color(0xFF2A2A2A),
+                    color: isDarkMode ? Colors.white : const Color(0xFF2A2A2A),
                     fontSize: 40,
                     fontWeight: FontWeight.w600,
                   ),
@@ -109,16 +99,13 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
               ),
             ),
             ListTile(
-              leading: Icon(
-                Icons.calculate,
-                color: Color(0xFFFF9500),
-                size: 30,
-              ),
+              leading: const Icon(Icons.calculate,
+                  color: Color(0xFFFF9500), size: 30),
               title: Text(
                 'Scientific Calculator',
                 style: TextStyle(
                   fontSize: 20,
-                  color: isDarkMode ? Colors.white : Color(0xFF2A2A2A),
+                  color: isDarkMode ? Colors.white : const Color(0xFF2A2A2A),
                 ),
               ),
               onTap: () {
@@ -131,15 +118,12 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
               },
             ),
             ListTile(
-              leading: Icon(
-                Icons.calculate,
-                color: Color(0xFFFF9500),
-                size: 30,
-              ),
+              leading: const Icon(Icons.calculate,
+                  color: Color(0xFFFF9500), size: 30),
               title: Text(
                 'CGPA Calculator',
                 style: TextStyle(
-                  color: isDarkMode ? Colors.white : Color(0xFF2A2A2A),
+                  color: isDarkMode ? Colors.white : const Color(0xFF2A2A2A),
                   fontSize: 20,
                 ),
               ),
@@ -153,24 +137,19 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
               },
             ),
             ListTile(
-              leading: Icon(
-                Icons.sunny_snowing,
-                color: Color(0xFFFF9500),
-                size: 30,
-              ),
+              leading: const Icon(Icons.sunny_snowing,
+                  color: Color(0xFFFF9500), size: 30),
               title: Text(
                 isDarkMode ? 'Change to light theme' : 'Change to dark theme',
                 style: TextStyle(
-                  color: isDarkMode ? Colors.white : Color(0xFF2A2A2A),
+                  color: isDarkMode ? Colors.white : const Color(0xFF2A2A2A),
                   fontSize: 20,
                 ),
               ),
               onTap: () {
-                setState(
-                  () {
-                    isDarkMode = !isDarkMode;
-                  },
-                );
+                setState(() {
+                  isDarkMode = !isDarkMode;
+                });
               },
             ),
           ],
@@ -178,51 +157,47 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
       ),
       body: Column(
         children: [
-          // This container will show the user input
+          // User input display
           Container(
             height: MediaQuery.of(context).size.height * 0.15,
             width: MediaQuery.of(context).size.height * 1,
             color: Colors.transparent,
             child: Padding(
-              padding: EdgeInsets.only(
-                top: 20,
-                right: 8,
-              ),
+              padding: const EdgeInsets.only(top: 20, right: 8),
               child: Text(
-                _getTruncatedText(
-                    TextToDisplay, 12), // Truncate to the latest 12 characters
+                _getTruncatedText(TextToDisplay, 12),
                 textAlign: TextAlign.right,
                 style: TextStyle(
                   color: isDarkMode ? Colors.white : Colors.black,
                   fontSize: 50,
                 ),
                 maxLines: 1,
-                overflow: TextOverflow.clip, // Ensure no ellipsis is shown
+                overflow: TextOverflow.clip,
               ),
             ),
           ),
 
-          // This container will show the answer
+          // Answer display
           Container(
             height: MediaQuery.of(context).size.height * 0.15,
             width: MediaQuery.of(context).size.height * 1,
             color: Colors.transparent,
             child: Padding(
-              padding: EdgeInsets.only(right: 12, left: 12),
+              padding: const EdgeInsets.only(right: 12, left: 12),
               child: FittedBox(
-                fit: BoxFit.scaleDown, // Dynamically shrink text to fit
+                fit: BoxFit.scaleDown,
                 alignment: Alignment.centerRight,
                 child: Text(
                   Ans,
                   textAlign: TextAlign.right,
-                  style: TextStyle(
-                    color: Color(0xFFFF9500),
-                    fontSize: 65, // Starting font size
-                  ),
+                  style:
+                      const TextStyle(color: Color(0xFFFF9500), fontSize: 65),
                 ),
               ),
             ),
           ),
+
+          // Buttons
           Expanded(
             child: Container(
               width: MediaQuery.of(context).size.width * 1,
