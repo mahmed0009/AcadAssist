@@ -1,8 +1,8 @@
 // ignore_for_file: prefer_const_constructors, library_private_types_in_public_api, file_names, prefer_const_literals_to_create_immutables, unrelated_type_equality_checks, curly_braces_in_flow_control_structures, non_constant_identifier_names, prefer_interpolation_to_compose_strings
 
-import 'package:accadassist/scientificCalculator.dart';
-import 'package:accadassist/simpleCalculator.dart';
 import 'package:flutter/material.dart';
+import 'package:project/scientificCalculator.dart';
+import 'package:project/simpleCalculator.dart';
 
 class CgpaCalculator extends StatefulWidget {
   const CgpaCalculator({super.key});
