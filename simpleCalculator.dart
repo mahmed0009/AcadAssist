@@ -3,8 +3,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:project/cgpaCalculator.dart';
+import 'package:project/otherCalculations.dart';
 import 'package:project/scientificCalculator.dart';
-import 'cgpaCalculator.dart';
 
 class SimpleCalculator extends StatefulWidget {
   const SimpleCalculator({super.key});
@@ -132,6 +133,25 @@ class _SimpleCalculatorState extends State<SimpleCalculator> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => CgpaCalculator(),
+                  ),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.calculate,
+                  color: Color(0xFFFF9500), size: 30),
+              title: Text(
+                'Other Calculators',
+                style: TextStyle(
+                  color: isDarkMode ? Colors.white : const Color(0xFF2A2A2A),
+                  fontSize: 20,
+                ),
+              ),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => OtherCalculators(),
                   ),
                 );
               },
